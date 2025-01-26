@@ -6,13 +6,27 @@
 class CommentManager extends AbstractEntityManager
 {
     /**
+     * Tableau des colonnes autorisées pour les requêtes SQL.
+     * @var array
+     */
+    protected $autorisedOrderColumns = [
+        'creation' => 'comment.date_creation',
+        'pseudo' => 'comment.pseudo'
+    ];
+
+    /**
      * Récupère tous les commentaires d'un article.
      * @param int $idArticle : l'id de l'article.
+     * @param string $orderby : la colonne sur laquelle on va trier.
+     * @param string $direction : le sens du tri.
      * @return array : un tableau d'objets Comment.
      */
-    public function getAllCommentsByArticleId(int $idArticle) : array
+    public function getAllCommentsByArticleId(int $idArticle, $orderby = null, $direction = 'ASC') : array
     {
         $sql = "SELECT * FROM comment WHERE id_article = :idArticle";
+
+        $sql .= $this->checkOrder($orderby, $direction);
+
         $result = $this->db->query($sql, ['idArticle' => $idArticle]);
         $comments = [];
 

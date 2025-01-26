@@ -38,6 +38,27 @@ class Utils {
     }
 
     /**
+     * Génère une URL pour le tri des articles.
+     * @param string $action : L'action que l'on veut faire (correspond aux actions dans le routeur).
+     * @param array $params : Les autres paramètres de l'URL sous la forme ['param1' => 'valeur1', 'param2' => 'valeur2']
+     * @param string|null $tri : La colonne par laquelle trier (peut être null).
+     * @param array $triParams : Les paramètres de tri sous la forme ['tri' => 'colonne', 'direction' => 'ASC|DESC']
+     * @return string : L'URL générée.
+     */
+    public static function generateUrl(string $action, array $params, ?string $tri = null, array $triParams = []) : string
+    {
+        $url = "index.php?action=$action";
+        if ($tri !== null) {
+            $direction = ($triParams[0] === $tri && $triParams[1] === 'ASC') ? 'DESC' : 'ASC';
+            $url .= "&tri=$tri&direction=$direction";
+        }
+        foreach ($params as $paramName => $paramValue) {
+            $url .= "&$paramName=$paramValue";
+        }
+        return $url;
+    }
+
+    /**
      * Cette méthode retourne le code js a insérer en attribut d'un bouton.
      * pour ouvrir une popup "confirm", et n'effectuer l'action que si l'utilisateur
      * a bien cliqué sur "ok".
@@ -86,5 +107,63 @@ class Utils {
     {
         return $_REQUEST[$variableName] ?? $defaultValue;
     }
+
+
+    /**
+     * initialise le token CSRF dans la session.
+     *
+     * @return void
+    */
+    public static function initCsrfToken() : void
+    {
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+    }
+
+    /**
+     * Vérifie si le token CSRF est valide.
+     *
+     * @return void
+    */
+    public static function checkCsrfToken() : void
+    {
+        try {
+            if (
+                !isset($_SESSION['csrf_token']) || 
+                !isset($_REQUEST['csrf_token']) || 
+                $_SESSION['csrf_token'] !== $_REQUEST['csrf_token']
+                ) {
+                throw new Exception("Erreur de vérification du token CSRF.");
+            }
+            self::generateCsrfToken();
+        } catch (Exception $e) {
+            $errorView = new View('Erreur');
+            $errorView->render('errorPage', ['errorMessage' => $e->getMessage()]);
+            exit();
+        }
+       
+    }
+
+    /**
+     * Génère un token CSRF.
+     *
+     * @return string : le token CSRF.
+    */
+    public static function generateCsrfToken() : string
+    {
+        return $_SESSION['csrf_token'];
+    }
+
+    /**
+     * on recupère le token CSRF dans la session.
+     * 
+     * @return string : le token CSRF.
+     */
+    public static function getCsrfToken() : string
+    {
+        return $_SESSION['csrf_token'];
+    }
+
 
 }

@@ -313,8 +313,67 @@ a.info {
     color: white;
 }
 
+table.adminArticle {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.adminArticle tr:nth-child(2n) {
+    background-color: rgba(255, 255, 255, .2);
+}
+.adminArticle thead {
+    background-color: var(--headerColor);
+}
+
+.adminArticle thead td {
+    text-wrap:  nowrap;
+}
+
+.adminArticle th {
+    padding: 10px;
+}
+
+.adminArticle td {
+    text-align: center;
+    padding: 20px;
+    border: 2px solid var(--backgroundColor);
+}
+
+table.adminArticle .submit.m-20 {
+    margin-left: 20px;
+}
+
+
+
+.adminArticle thead td {
+    font-weight: bold;
+    color: white;
+    padding-right: 30px;
+    position: relative;
+}
+
+.adminArticle thead td.sort-up::after,
+.adminArticle thead td.sort-down::after {
+    position: absolute;
+    right: 10px;
+    text-align: center;
+}
+
+.adminArticle thead td.sort-up::after {
+    content: "▲";
+}
+
+.adminArticle thead td.sort-down::after {
+    content: "▼";
+}
+.adminArticle td.titre {
+    text-align: left;
+}
+
+
 .articleLine {
     display: flex; 
+
 }
 
 .articleLine div {

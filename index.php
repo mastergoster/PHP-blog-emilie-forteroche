@@ -3,6 +3,9 @@
 require_once 'config/config.php';
 require_once 'config/autoload.php';
 
+// On initialise le token CSRF.
+Utils::initCsrfToken();
+
 // On récupère l'action demandée par l'utilisateur.
 // Si aucune action n'est demandée, on affiche la page d'accueil.
 $action = Utils::request('action', 'home');
@@ -72,6 +75,21 @@ try {
         case 'deleteArticle':
             $adminController = new AdminController();
             $adminController->deleteArticle();
+            break;
+
+        case 'statistiques':
+            $adminController = new AdminController();
+            $adminController->showStats();
+            break;
+        
+        case 'adminComments':
+            $adminController = new AdminController();
+            $adminController->adminComments();
+            break;
+
+        case 'deleteComment':
+            $adminController = new AdminController();
+            $adminController->deleteComment();
             break;
 
         default:

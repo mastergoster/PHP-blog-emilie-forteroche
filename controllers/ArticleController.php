@@ -34,6 +34,11 @@ class ArticleController
         $commentManager = new CommentManager();
         $comments = $commentManager->getAllCommentsByArticleId($id);
 
+        // On ajoute une vue si l'utilisateur n'est pas connecté.
+        if (!isset($_SESSION['user'])) {
+            $articleManager->addView($article->getId());
+        }
+        
         $view = new View($article->getTitle());
         $view->render("detailArticle", ['article' => $article, 'comments' => $comments]);
     }

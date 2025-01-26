@@ -6,6 +6,17 @@
 class ArticleManager extends AbstractEntityManager 
 {
     /**
+     * Tableau des colonnes autorisées pour les requêtes SQL.
+     * @var array
+     */
+    protected $autorisedOrderColumns = [
+        'titre' => 'article.title',
+        'vues' => 'article.nb_view',
+        'comment' => 'nb_comments',
+        'creation' => 'article.date_creation'
+    ];
+
+    /**
      * Récupère tous les articles.
      * @return array : un tableau d'objets Article.
      */
@@ -91,5 +102,39 @@ class ArticleManager extends AbstractEntityManager
     {
         $sql = "DELETE FROM article WHERE id = :id";
         $this->db->query($sql, ['id' => $id]);
+    }
+    /**
+     * ajoute une vue à un article
+     * @param int $id : l'id de l'article ou il faut ajouter une vue.
+     * @return void
+     */
+    public function addView(int $id) : void
+    {
+        $sql = "UPDATE article SET nb_view = nb_view + 1 WHERE id = :id";
+        $this->db->query($sql, ['id' => $id]);
+    }
+
+    /**
+     * Récupère tous les articles avec le nombre de commentaires associés.
+     * @param string $orderby : la colonne sur laquelle trier les articles.
+     * @param string $direction : le sens du tri.
+     * @return array : un tableau d'objets Article.
+     */
+    public function getAllArticlesWithComments($orderby = null, $direction = 'ASC') : array
+    {
+        $sql = "SELECT article.*, COUNT(comment.id) as nb_comments
+                FROM article 
+                LEFT JOIN comment ON article.id = comment.id_article
+                GROUP BY article.id";
+
+        $sql .= $this->checkOrder($orderby, $direction);
+        
+        $result = $this->db->query($sql);
+        $articles = [];
+
+        while ($article = $result->fetch()) {
+            $articles[] = new Article($article);
+        }
+        return $articles;
     }
 }

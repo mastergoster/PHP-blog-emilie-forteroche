@@ -9,8 +9,11 @@
     private int $idUser;
     private string $title = "";
     private string $content = "";
+    private int $nbView = 0;
+    private int $nbComments = 0;
     private ?DateTime $dateCreation = null;
-    private ?DateTime $dateUpdate = null;  
+    private ?DateTime $dateUpdate = null;
+
 
     /**
      * Setter pour l'id de l'utilisateur. 
@@ -105,11 +108,11 @@
 
     /**
      * Setter pour la date de mise à jour. Si la date est une string, on la convertit en DateTime.
-     * @param string|DateTime $dateUpdate
+     * @param string|DateTime|null $dateUpdate
      * @param string $format : le format pour la convertion de la date si elle est une string.
      * Par défaut, c'est le format de date mysql qui est utilisé.
      */
-    public function setDateUpdate(string|DateTime $dateUpdate, string $format = 'Y-m-d H:i:s') : void 
+    public function setDateUpdate(string|DateTime|null $dateUpdate, string $format = 'Y-m-d H:i:s') : void 
     {
         if (is_string($dateUpdate)) {
             $dateUpdate = DateTime::createFromFormat($format, $dateUpdate);
@@ -126,5 +129,53 @@
     public function getDateUpdate() : ?DateTime 
     {
         return $this->dateUpdate;
+    }
+
+    /**
+     * Get the value of nbView
+     *
+     * @return ?int
+     */
+    public function getNbView(): ?int
+    {
+        return $this->nbView;
+    }
+
+    /**
+     * Set the value of nbView
+     *
+     * @param ?int $nbView
+     *
+     * @return self
+     */
+    public function setNbView(?int $nbView): self
+    {
+        $this->nbView = $nbView;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nbComments
+     *
+     * @return int
+     */
+    public function getNbComments(): int
+    {
+        return $this->nbComments;
+    }
+
+    /**
+     * Set the value of nbComments
+     *
+     * @param int $nbComments
+     *
+     * @return self
+     */
+    public function setNbComments(int $nbComments): self
+    {
+        $this->nbComments = $nbComments;
+
+        return $this;
     }
  }

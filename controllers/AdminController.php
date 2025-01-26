@@ -176,4 +176,78 @@ class AdminController {
         // On redirige vers la page d'administration.
         Utils::redirect("admin");
     }
+
+    /**
+     * affichage des statistiques
+     * @return void
+     */
+    public function showStats() : void
+    {
+        $this->checkIfUserIsConnected();
+
+        $tri = Utils::request("tri", null);
+        $direction = Utils::request("direction", "ASC");
+
+        $articleManager = new ArticleManager();
+        $articles = $articleManager->getAllArticlesWithComments($tri, $direction);
+
+        // On affiche la page des statistiques.
+        $view = new View("statistiques");
+        $view->render("stats", [
+            'articles' => $articles,
+            'tri' => [$tri, $direction],
+        ]);
+    }
+
+    /**
+     * Moderation des commentaires.
+     * @return void
+     */
+    public function adminComments() : void
+    {
+        $this->checkIfUserIsConnected();
+
+        $idArticle = Utils::request("articleId", -1);
+        $tri = Utils::request("tri", null);
+        $direction = Utils::request("direction", "ASC");
+
+        
+        $commentManager = new CommentManager();
+        $comments = $commentManager->getAllCommentsByArticleId($idArticle, $tri, $direction);
+
+        if (!$comments) {
+            Utils::redirect("statistiques");
+        }
+
+        $view = new View("Modérations des Commentaires");
+        $view->render("adminComments", [
+            'comments' => $comments,
+            'idArticle' => $idArticle,
+            'tri' => [$tri, $direction],
+            'csrfToken' => Utils::getCsrfToken()
+        ]);
+    }
+
+    /**
+     * Suppression d'un commentaire.
+     * @return void
+     */
+    public function deleteComment() : void
+    {
+        $this->checkIfUserIsConnected();
+        Utils::checkCsrfToken();
+        $id = Utils::request("id", -1);
+
+
+        // On supprime le commentaire.
+        $commentManager = new CommentManager();
+        $comment = $commentManager->getCommentById($id);
+        if (!$comment) {
+            throw new Exception("Le commentaire demandé n'existe pas.");
+        }
+        $commentManager->deleteComment($comment);
+
+        // On redirige vers la page de modération des commentaires.
+        Utils::redirect("adminComments", ["articleId" => Utils::request("articleId", -1)]);
+    }
 }
